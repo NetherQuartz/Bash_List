@@ -1,6 +1,10 @@
 #!/bin/bash
 
-function create_list() {
+function create_list {
+	local len=
+	printf "Введите длину списка: "
+	read -r len
+	echo "Вводите элементы построчно:"
 	local a=1
 	while [[ $next != nil ]]
 	do
@@ -14,7 +18,7 @@ function create_list() {
 		fi
 
 		local next=
-		if [[ $a -eq 3 ]]
+		if [[ $a -eq len ]]
 		then
 			next=nil
 		else
@@ -33,7 +37,7 @@ function create_list() {
 	echo $((a-1)) >> list
 }
 
-function read_list() {
+function read_list {
 	local start=
 	local end=
 	for i in {1..2}
