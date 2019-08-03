@@ -274,6 +274,153 @@ function insert {
 		echo $max >> list
 }
 
+function delete {
+	local start=
+	local end=
+	local max=
+
+	for i in {1..3}
+	do
+		if [[ i -eq 1 ]]
+		then
+			read -r start
+		elif [[ i -eq 2 ]]
+		then
+			read -r end
+		else
+			read -r max
+		fi
+	done < list
+
+	local cur=$start
+	local prev=
+	local value=
+	local next=
+	printf "Введите позицию (от 1): "
+	local pos=
+	read -r pos
+
+	if (( pos < 1 || pos > $(ls -l part_* | wc -l) ))
+	then
+		echo "Неверный индекс!"
+		return
+	fi
+
+	local c=0
+	local new_prev=
+	local new_next=
+	local to_del=
+	while [[ c -lt pos ]]
+	do
+		local file=part_$cur
+		for i in {1..3}
+		do
+			case $i in
+				1)
+					read -r prev
+					;;
+				2)
+					read -r value
+					;;
+				3)
+					read -r next
+					;;
+			esac
+		done < $file
+
+		new_prev=$prev
+		to_del=$cur
+		new_next=$next
+
+		if [[ $next != "nil" ]]
+		then
+			cur=$next
+		fi
+		((c++))
+	done
+
+	local np_prev=
+	local np_value=
+	local np_next=
+	local nn_prev=
+	local nn_value=
+	local nn_next=
+
+	if ((pos > 1))
+	then
+		for i in {1..3}
+		do
+			case $i in
+				1)
+					read -r np_prev
+					;;
+				2)
+					read -r np_value
+					;;
+				3)
+					read -r np_next
+					;;
+			esac
+		done < part_$new_prev
+	fi
+
+	if (( pos < $(ls -l part_* | wc -l) ))
+	then
+		for i in {1..3}
+		do
+			case $i in
+				1)
+					read -r nn_prev
+					;;
+				2)
+					read -r nn_value
+					;;
+				3)
+					read -r nn_next
+					;;
+			esac
+		done < part_$new_next
+	fi
+
+	if ((pos == 1))
+	then
+		rm -f part_$start
+		start=$new_next
+		
+		echo nil > part_$new_next
+		echo $nn_value >> part_$new_next
+		echo $nn_next >> part_$new_next
+		echo >> part_$new_next
+
+	elif (( pos == $(ls -l part_* | wc -l) ))
+	then
+		rm -f part_$end
+		end=$new_prev
+		
+		echo $np_prev > part_$new_prev
+		echo $np_value >> part_$new_prev
+		echo nil >> part_$new_prev
+		echo >> part_$new_prev
+	else
+
+		rm -f part_$nn_prev
+		
+		echo $np_prev > part_$new_prev
+		echo $np_value >> part_$new_prev
+		echo $new_next >> part_$new_prev
+		echo >> part_$new_prev
+
+		echo $new_prev > part_$new_next
+		echo $nn_value >> part_$new_next
+		echo $nn_next >> part_$new_next
+		echo >> part_$new_next
+	fi
+
+	echo $start > list
+	echo $end >> list
+	echo $max >> list
+}
+
 PS3="Выберите действие: "
 select el in Создать Вставить Удалить Просмотреть Очистить Выйти
 do
