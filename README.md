@@ -2,7 +2,7 @@
 A list data structure written in Bash. Bash doesn't provide neither dynamic structures nor C-style arays, so I wrote my list using files.
 
 # Requirements
-You need Git and Bash installed.
+You need Git and Bash installed. Bash_List works on Linux, macOS and Windows 10 with WSL.
 
 # How to use
 1. Open `bash`
